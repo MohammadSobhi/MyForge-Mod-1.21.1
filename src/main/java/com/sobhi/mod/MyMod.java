@@ -1,6 +1,7 @@
 package com.sobhi.mod;
 
 import com.mojang.logging.LogUtils;
+import com.sobhi.mod.item.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
@@ -45,6 +46,7 @@ public class MyMod
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
+        ModItems.register(modEventBus);
 
 
         // Register ourselves for server and other game events we are interested in
@@ -65,7 +67,9 @@ public class MyMod
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
-
+        if(event.getTabKey() == CreativeModeTabs.INGREDIENTS){
+            event.accept(ModItems.example_item);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
