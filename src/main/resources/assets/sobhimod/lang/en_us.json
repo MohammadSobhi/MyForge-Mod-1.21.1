@@ -1,5 +1,5 @@
 {
 
-  "item.sobhimod.example_item" : "This is an example"
-
+  "item.sobhimod.example_item" : "This is an example",
+  "block.sobhimod.example_block" : "An example block"
 }

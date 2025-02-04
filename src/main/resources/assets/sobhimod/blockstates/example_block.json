@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "sobhimod:block/example_block"
+    }
+  }
+}

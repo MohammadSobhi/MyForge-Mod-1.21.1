@@ -1,6 +1,7 @@
 package com.sobhi.mod;
 
 import com.mojang.logging.LogUtils;
+import com.sobhi.mod.block.ModBlocks;
 import com.sobhi.mod.item.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -47,7 +48,7 @@ public class MyMod
         modEventBus.addListener(this::commonSetup);
 
         ModItems.register(modEventBus);
-
+        ModBlocks.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -69,6 +70,10 @@ public class MyMod
     {
         if(event.getTabKey() == CreativeModeTabs.INGREDIENTS){
             event.accept(ModItems.example_item);
+        }
+
+        if(event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS){
+            event.accept(ModBlocks.example_block);
         }
     }
 
