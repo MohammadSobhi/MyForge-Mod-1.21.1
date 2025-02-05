@@ -2,6 +2,7 @@ package com.sobhi.mod;
 
 import com.mojang.logging.LogUtils;
 import com.sobhi.mod.block.ModBlocks;
+import com.sobhi.mod.item.ModCreativeModeTabs;
 import com.sobhi.mod.item.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -47,6 +48,7 @@ public class MyMod
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
+        ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
 

@@ -1,5 +1,6 @@
 {
 
   "item.sobhimod.example_item" : "This is an example",
-  "block.sobhimod.example_block" : "An example block"
+  "block.sobhimod.example_block" : "An example block",
+  "creative.tab.items" : "Example Tab"
 }
