@@ -1,0 +1,16 @@
+{
+  "type" : "minecraft:crafting_shapeless",
+  "category" : "misc",
+
+  "ingredients": [
+    {
+      "item" : "sobhimod:example_block"
+    }
+  ],
+
+  "result": {
+    "count": 9,
+    "id": "sobhimod:example_item"
+  }
+
+}
