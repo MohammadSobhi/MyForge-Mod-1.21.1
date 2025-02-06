@@ -1,6 +1,7 @@
 package com.sobhi.mod.item;
 
 import com.sobhi.mod.MyMod;
+import com.sobhi.mod.item.custom.CustomItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -17,6 +18,8 @@ public class ModItems {
     public static final RegistryObject<Item> example_item = ITEMS.register("example_item" ,
             () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> custom_item = ITEMS.register("custom_item" ,
+            () -> new CustomItem(new Item.Properties().durability(32)));
 
     public static void register (IEventBus eventBus){
         ITEMS.register(eventBus);
