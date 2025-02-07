@@ -1,6 +1,7 @@
 package com.sobhi.mod.block;
 
 import com.sobhi.mod.MyMod;
+import com.sobhi.mod.block.custom.CustomBlock;
 import com.sobhi.mod.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -23,6 +24,9 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> example_block = registerBlock("example_block",
             ()-> new Block(BlockBehaviour.Properties.of().strength(4f).requiresCorrectToolForDrops().sound(SoundType.AMETHYST)));
+
+    public static final RegistryObject<Block> custom_block = registerBlock("custom_block",
+            ()-> new CustomBlock(BlockBehaviour.Properties.of().strength(4f).requiresCorrectToolForDrops().sound(SoundType.BONE_BLOCK)));
 
     // ********************* IMPORTANT ***************************************************************************************************
 

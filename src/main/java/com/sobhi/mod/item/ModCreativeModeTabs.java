@@ -2,6 +2,7 @@ package com.sobhi.mod.item;
 
 import com.sobhi.mod.MyMod;
 import com.sobhi.mod.block.ModBlocks;
+import com.sobhi.mod.block.custom.CustomBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -22,6 +23,7 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModItems.example_item.get());
                         pOutput.accept(ModBlocks.example_block.get());
                         pOutput.accept(ModItems.custom_item.get());
+                        pOutput.accept(ModBlocks.custom_block.get());
                     })
                     .build());
 
