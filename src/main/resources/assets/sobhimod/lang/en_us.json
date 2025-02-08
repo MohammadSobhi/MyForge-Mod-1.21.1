@@ -3,5 +3,6 @@
   "item.sobhimod.example_item" : "This is an example",
   "item.sobhimod.custom_item" : "This is an advanced item",
   "block.sobhimod.example_block" : "An example block",
+  "block.sobhimod.custom_block" : "Custom block",
   "creative.tab.items" : "Example Tab"
 }
