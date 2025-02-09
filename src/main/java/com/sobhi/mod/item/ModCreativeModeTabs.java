@@ -24,6 +24,7 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModBlocks.example_block.get());
                         pOutput.accept(ModItems.custom_item.get());
                         pOutput.accept(ModBlocks.custom_block.get());
+                        pOutput.accept(ModItems.custom_fuel.get());
                     })
                     .build());
 

@@ -2,6 +2,7 @@ package com.sobhi.mod.item;
 
 import com.sobhi.mod.MyMod;
 import com.sobhi.mod.item.custom.CustomItem;
+import com.sobhi.mod.item.custom.FuelItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -20,6 +21,10 @@ public class ModItems {
 
     public static final RegistryObject<Item> custom_item = ITEMS.register("custom_item" ,
             () -> new CustomItem(new Item.Properties().durability(32)));
+
+    public static final RegistryObject<Item> custom_fuel = ITEMS.register("custom_fuel" ,
+            () -> new FuelItem(new Item.Properties() , 1200));
+
 
     public static void register (IEventBus eventBus){
         ITEMS.register(eventBus);
