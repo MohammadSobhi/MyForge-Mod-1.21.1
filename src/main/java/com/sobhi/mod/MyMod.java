@@ -3,6 +3,7 @@ package com.sobhi.mod;
 import com.mojang.logging.LogUtils;
 import com.sobhi.mod.block.ModBlocks;
 import com.sobhi.mod.client.render.DroneRenderer;
+import com.sobhi.mod.entity.EntityDrone;
 import com.sobhi.mod.entity.ModEntities;
 import com.sobhi.mod.item.ModCreativeModeTabs;
 import com.sobhi.mod.item.ModItems;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -55,6 +57,8 @@ public class MyMod
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
+        EntityDrone.registerDataComponents(modEventBus);
+        modEventBus.addListener(this::commonSetup);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -90,6 +94,8 @@ public class MyMod
 
     }
 
+
+
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
@@ -100,4 +106,12 @@ public class MyMod
             EntityRenderers.register(ModEntities.DRONE.get(), DroneRenderer::new );
         }
     }
+
+    @SubscribeEvent
+    public static void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
+        if (event.getTarget() instanceof EntityDrone drone &&
+                !event.getEntity().isShiftKeyDown()) {
+            event.getEntity().startRiding(drone);
+            event.setCanceled(true);
+        }}
 }

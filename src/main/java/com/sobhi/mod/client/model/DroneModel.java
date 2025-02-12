@@ -35,7 +35,7 @@ public class DroneModel<T extends EntityDrone> extends HierarchicalModel<T> {
         // Define the drone's body (adjust as needed)
         parts.addOrReplaceChild("body", CubeListBuilder.create()
                         .texOffs(0, 0)
-                        .addBox(-4f, -2f, -4f, 8, 4, 8), // Size: 8x4x8
+                        .addBox(0f, 0f, 0f, 10, 10, 10), // Size: 8x4x8
                 PartPose.offset(0f, 0f, 0f)
         );
 

@@ -13,8 +13,6 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<EntityDrone>> DRONE = ENTITIES.register(
             "drone",
-            () -> EntityType.Builder.of(EntityDrone::new, MobCategory.MISC)
-                    .sized(0.8f, 0.6f) //
-                    .build("drone")
+            EntityDrone::createType
     );
 }

@@ -14,7 +14,7 @@ public class ClientForgeHandler {
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event){
         Minecraft minecraft = Minecraft.getInstance();
-        if(DroneKeybinds.INSTANCE.example_key.consumeClick() && minecraft.player != null){
+        if(DroneKeybinds.forward.consumeClick() && minecraft.player != null){
             minecraft.player.displayClientMessage(Component.literal("Key Pressed Successfully"),false);
         }
 

@@ -1,28 +1,170 @@
 package com.sobhi.mod.entity;
 
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
+import com.mojang.serialization.Codec;
+import com.sobhi.mod.MyMod;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
-public class EntityDrone extends Mob {
+public class EntityDrone extends Entity{
 
+    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS =
+            DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MyMod.MOD_ID);
 
+    public static final RegistryObject<DataComponentType<Boolean>> BOOST_COMPONENT = DATA_COMPONENTS.register(
+            "boost",
+            () -> DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL)
+                    .build()
+    );
 
-    protected EntityDrone(EntityType<? extends Mob> pEntityType, Level pLevel) {
-        super(pEntityType, pLevel);
-        this.noPhysics = false ;
+    // Synced entity data
+    private static final EntityDataAccessor<Byte> DATA_SHARED_FLAGS_ID =
+            SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BYTE);
+
+    private static final EntityDataAccessor<Boolean> BOOSTING =
+            SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BOOLEAN);
+
+    // Movement parameters
+    private float moveSpeed = 0.5f;
+    private float verticalSpeed = 0.1f;
+
+    public EntityDrone(EntityType<?> type, Level level) {
+        super(type, level);
+        this.setNoGravity(true);
     }
 
-    public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 20.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.5);
+    public static EntityType<EntityDrone> createType() {
+        return EntityType.Builder.<EntityDrone>of(EntityDrone::new, MobCategory.MISC)
+                .sized(0.8f, 0.6f)
+                .build("drone");
+    }
+
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        // Define base entity flags first (required)
+        builder.define(DATA_SHARED_FLAGS_ID, (byte)0);
+
+        // Define custom data
+        builder.define(BOOSTING, false);
+    }
+
+    // Add these required base entity methods
+    @Override
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        if (tag.contains("Boosting")) {
+            this.entityData.set(BOOSTING, tag.getBoolean("Boosting"));
+        }
     }
 
     @Override
-    protected void registerGoals() {
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        tag.putBoolean("Boosting", this.entityData.get(BOOSTING));
+    }
 
+    @Override
+    protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
+        if (this.hasPassenger(passenger)) {
+            // Position rider 0.5 blocks above drone center using the callback
+            double yOffset = this.getY() + 0.5;
+            callback.accept(passenger, this.getX(), yOffset, this.getZ());
+        }
+    }
+
+    @Override
+    public void rideTick() {
+        super.rideTick();
+
+        if (this.getControllingPassenger() instanceof Player player) {
+            // Rotation control
+            this.setYRot(player.getYRot());
+            this.yRotO = this.getYRot();
+            this.setXRot(player.getXRot() * 0.5f);
+
+            // Movement calculations - use proper input methods
+            float forward = player.zza;  // Forward impulse (W/S keys)
+            float strafe = player.xxa;   // Strafe impulse (A/D keys)
+            float vertical = 0;
+
+
+            if (player.isShiftKeyDown()) { // Sneaking state (shift key)
+                vertical -= 0.15f;
+            }
+
+            Vec3 motion = new Vec3(strafe, vertical, forward)
+                    .yRot(-this.getYRot() * ((float) Math.PI / 180F))
+                    .scale(0.25f);
+
+            this.setDeltaMovement(motion);
+        }
+    }
+
+
+    @Override
+    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
+        if (!this.level().isClientSide && player.getVehicle() == null) {
+
+
+            return player.startRiding(this) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+        }
+        return InteractionResult.PASS;
+    }
+
+
+    public boolean isRideable() {
+        return true; // Make entity rideable
+    }
+
+
+    public boolean isBoosting() {
+        return this.entityData.get(BOOSTING);
+    }
+
+    public void setBoosting(boolean boosting) {
+        this.entityData.set(BOOSTING, boosting);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        // Update movement/rotation
+
+    }
+
+    private void handleControls(Player player) {
+        // WASD movement implementation
+        Vec3 movement = new Vec3(
+                player.xxa * moveSpeed,
+                0,
+                player.zza * moveSpeed
+        ).yRot(-player.getYRot() * ((float) Math.PI / 180F));
+
+        this.setDeltaMovement(movement);
+    }
+
+    @Override
+    public boolean isPickable() {
+        return true;
+    }
+
+    public static void registerDataComponents(IEventBus eventBus) {
+        DATA_COMPONENTS.register(eventBus);
     }
 }
