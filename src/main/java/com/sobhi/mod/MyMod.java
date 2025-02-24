@@ -57,7 +57,7 @@ public class MyMod
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
-        EntityDrone.registerDataComponents(modEventBus);
+        //EntityDrone.registerDataComponents(modEventBus); this was used to register the DATA_COMPONENTS
         modEventBus.addListener(this::commonSetup);
 
         // Register ourselves for server and other game events we are interested in

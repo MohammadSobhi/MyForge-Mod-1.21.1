@@ -23,23 +23,13 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class EntityDrone extends Entity{
 
-    public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS =
-            DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MyMod.MOD_ID);
 
-    public static final RegistryObject<DataComponentType<Boolean>> BOOST_COMPONENT = DATA_COMPONENTS.register(
-            "boost",
-            () -> DataComponentType.<Boolean>builder()
-                    .persistent(Codec.BOOL)
-                    .networkSynchronized(ByteBufCodecs.BOOL)
-                    .build()
-    );
+
 
     // Synced entity data
     private static final EntityDataAccessor<Byte> DATA_SHARED_FLAGS_ID =
             SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BYTE);
 
-    private static final EntityDataAccessor<Boolean> BOOSTING =
-            SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BOOLEAN);
 
     // Movement parameters
     private float moveSpeed = 0.5f;
@@ -63,20 +53,18 @@ public class EntityDrone extends Entity{
         builder.define(DATA_SHARED_FLAGS_ID, (byte)0);
 
         // Define custom data
-        builder.define(BOOSTING, false);
+        //builder.define(BOOSTING, false);
     }
 
     // Add these required base entity methods
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.contains("Boosting")) {
-            this.entityData.set(BOOSTING, tag.getBoolean("Boosting"));
-        }
+
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putBoolean("Boosting", this.entityData.get(BOOSTING));
+
     }
 
     @Override
@@ -121,7 +109,7 @@ public class EntityDrone extends Entity{
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         if (!this.level().isClientSide && player.getVehicle() == null) {
 
-
+            //System.out.println("started riding");
             return player.startRiding(this) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
         return InteractionResult.PASS;
@@ -129,17 +117,14 @@ public class EntityDrone extends Entity{
 
 
     public boolean isRideable() {
-        return true; // Make entity rideable
+        //System.out.println("isRideable() called, returning false");
+        return false; // Make entity rideable
     }
 
 
-    public boolean isBoosting() {
-        return this.entityData.get(BOOSTING);
-    }
 
-    public void setBoosting(boolean boosting) {
-        this.entityData.set(BOOSTING, boosting);
-    }
+
+
 
     @Override
     public void tick() {
@@ -164,7 +149,5 @@ public class EntityDrone extends Entity{
         return true;
     }
 
-    public static void registerDataComponents(IEventBus eventBus) {
-        DATA_COMPONENTS.register(eventBus);
-    }
+
 }
