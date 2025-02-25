@@ -5,6 +5,7 @@ import com.sobhi.mod.MyMod;
 import com.sobhi.mod.client.model.DroneModel;
 import com.sobhi.mod.entity.EntityDrone;
 import com.sobhi.mod.entity.ModEntities;
+import com.sobhi.mod.network.ModNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,6 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import com.sobhi.mod.client.render.DroneRenderer;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(modid = MyMod.MOD_ID , bus = Mod.EventBusSubscriber.Bus.MOD , value = Dist.CLIENT)
 public class ClientModEvents {
@@ -30,6 +32,13 @@ public class ClientModEvents {
     public static void clientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             EntityRenderers.register(ModEntities.DRONE.get(), DroneRenderer::new);
+        });
+    }
+
+    @SubscribeEvent
+    public static void commonSetup(FMLCommonSetupEvent event){
+        event.enqueueWork(()->{
+            ModNetworking.register();
         });
     }
 
