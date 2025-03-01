@@ -7,6 +7,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCameraPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -14,6 +15,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -137,7 +139,27 @@ public class EntityDrone extends Entity{
     }
 
 
+    // In your DroneEntity class
     @Override
+    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
+        if (!this.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
+            // Set player's camera to this drone
+            serverPlayer.setCamera(this);
+            // Force camera update
+            serverPlayer.connection.send(new ClientboundSetCameraPacket(this));
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.PASS;
+    }
+
+
+
+
+    /*@Override
+
+
+    ####################### old interaction , block move 1 block when clicking ###############
+
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
 
         if (!this.level().isClientSide) {
@@ -193,7 +215,7 @@ public class EntityDrone extends Entity{
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
-    }
+    }*/
 
 
     public boolean isRideable() {
