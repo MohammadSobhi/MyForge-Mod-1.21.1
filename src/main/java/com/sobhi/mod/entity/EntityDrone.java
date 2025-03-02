@@ -6,10 +6,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundSetCameraPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,6 +24,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
+
+import java.util.HashSet;
 
 public class EntityDrone extends Entity{
 
@@ -99,14 +98,7 @@ public class EntityDrone extends Entity{
 
     }
 
-    @Override
-    protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
-        if (this.hasPassenger(passenger)) {
-            // Position rider 0.5 blocks above drone center using the callback
-            double yOffset = this.getY() + 0.5;
-            callback.accept(passenger, this.getX(), yOffset, this.getZ());
-        }
-    }
+
 
     @Override
     public void rideTick() {
@@ -142,12 +134,24 @@ public class EntityDrone extends Entity{
     // In your DroneEntity class
     @Override
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
-        if (!this.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
-            // Set player's camera to this drone
+        if (!level().isClientSide && player instanceof ServerPlayer serverPlayer) {
+            // 2.1 - Store original position
+            Vec3 originalPos = player.position();
             serverPlayer.setCamera(this);
-            // Force camera update
-            serverPlayer.connection.send(new ClientboundSetCameraPacket(this));
-            return InteractionResult.SUCCESS;
+
+            // 2.2 - Force teleport back every tick
+            serverPlayer.connection.send(new ClientboundPlayerPositionPacket(
+                    originalPos.x,
+                    originalPos.y,
+                    originalPos.z,
+                    player.getYRot(),
+                    player.getXRot(),
+                    new HashSet<>(),
+                    0
+            ));
+
+            // 2.3 - Cancel all interactions
+            return InteractionResult.CONSUME_PARTIAL;
         }
         return InteractionResult.PASS;
     }
@@ -224,6 +228,7 @@ public class EntityDrone extends Entity{
     }
 
 
+
     public boolean isMovingForward() {
         return this.entityData.get(MOVING_FORWARD);
     }
@@ -293,5 +298,25 @@ public class EntityDrone extends Entity{
         return true;
     }
 
+
+    @Override
+    public boolean canAddPassenger(Entity passenger) {
+        return false;
+    }
+
+    // 1.2 - Explicit riding denial
+    @Override
+    public boolean isVehicle() {
+        return false;
+    }
+
+
+
+
+    // 1.4 - Hard-block mounting attempts
+    @Override
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        return InteractionResult.PASS; // Bypass default interaction
+    }
 
 }
