@@ -2,6 +2,7 @@ package com.sobhi.mod.entity;
 
 import com.mojang.serialization.Codec;
 import com.sobhi.mod.MyMod;
+import com.sobhi.mod.client.DroneCamera;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -134,26 +135,10 @@ public class EntityDrone extends Entity{
     // In your DroneEntity class
     @Override
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
-        if (!level().isClientSide && player instanceof ServerPlayer serverPlayer) {
-            // 2.1 - Store original position
-            Vec3 originalPos = player.position();
-            serverPlayer.setCamera(this);
-
-            // 2.2 - Force teleport back every tick
-            serverPlayer.connection.send(new ClientboundPlayerPositionPacket(
-                    originalPos.x,
-                    originalPos.y,
-                    originalPos.z,
-                    player.getYRot(),
-                    player.getXRot(),
-                    new HashSet<>(),
-                    0
-            ));
-
-            // 2.3 - Cancel all interactions
-            return InteractionResult.CONSUME_PARTIAL;
+        if (!this.level().isClientSide) {
+            DroneCamera.toggleDroneCamera(this);
         }
-        return InteractionResult.PASS;
+        return InteractionResult.SUCCESS;
     }
 
 
