@@ -1,6 +1,7 @@
 package com.sobhi.mod.client;
 
 import com.sobhi.mod.entity.EntityDrone;
+import com.sobhi.mod.network.ModNetworking;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -51,36 +52,29 @@ public class DroneCamera {
         if (event.phase == TickEvent.Phase.END || !active) return;
 
         if (mc.getCameraEntity() instanceof EntityDrone drone) {
-            Vec3 movement = Vec3.ZERO;
+            double moveX = 0, moveY = 0, moveZ = 0;
 
             if (DroneKeybinds.forward.isDown()) {
-                movement = movement.add(drone.getLookAngle().scale(0.2)); // Move forward
-                System.out.println("Moving forward!");
+                moveZ += 0.2; // Move forward
             }
             if (DroneKeybinds.backward.isDown()) {
-                movement = movement.add(drone.getLookAngle().scale(-0.2)); // Move backward
-                System.out.println("Moving backward!");
+                moveZ -= 0.2; // Move backward
             }
             if (DroneKeybinds.left.isDown()) {
-                movement = movement.add(drone.getLookAngle().yRot((float) Math.toRadians(90)).scale(0.2)); // Strafe left
-                System.out.println("Moving left!");
+                moveX -= 0.2; // Move left
             }
             if (DroneKeybinds.right.isDown()) {
-                movement = movement.add(drone.getLookAngle().yRot((float) Math.toRadians(-90)).scale(0.2)); // Strafe right
-                System.out.println("Moving right!");
+                moveX += 0.2; // Move right
             }
             if (DroneKeybinds.up.isDown()) {
-                movement = movement.add(0, 0.2, 0); // Move up
-                System.out.println("Moving up!");
+                moveY += 0.2; // Move up
             }
             if (DroneKeybinds.down.isDown()) {
-                movement = movement.add(0, -0.2, 0); // Move down
-                System.out.println("Moving down!");
+                moveY -= 0.2; // Move down
             }
 
-            // Update drone position manually
-            if (!movement.equals(Vec3.ZERO)) {
-                drone.setPos(drone.getX() + movement.x, drone.getY() + movement.y, drone.getZ() + movement.z);
+            if (moveX != 0 || moveY != 0 || moveZ != 0) {
+                ModNetworking.sendMovePacket(drone, moveX, moveY, moveZ);
             }
         }
     }

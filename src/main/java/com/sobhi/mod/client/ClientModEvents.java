@@ -35,12 +35,12 @@ public class ClientModEvents {
         });
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void commonSetup(FMLCommonSetupEvent event){
         event.enqueueWork(()->{
             ModNetworking.register();
         });
-    }
+    }*/
 
 
     @SubscribeEvent

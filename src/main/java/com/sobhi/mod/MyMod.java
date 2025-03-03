@@ -7,6 +7,7 @@ import com.sobhi.mod.entity.EntityDrone;
 import com.sobhi.mod.entity.ModEntities;
 import com.sobhi.mod.item.ModCreativeModeTabs;
 import com.sobhi.mod.item.ModItems;
+import com.sobhi.mod.network.ModNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.Registries;
@@ -57,6 +58,9 @@ public class MyMod
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
+
+        ModNetworking.register();
+
         //EntityDrone.registerDataComponents(modEventBus); this was used to register the DATA_COMPONENTS
         modEventBus.addListener(this::commonSetup);
 

@@ -1,6 +1,7 @@
 package com.sobhi.mod.network;
 
 import com.sobhi.mod.MyMod;
+import com.sobhi.mod.entity.EntityDrone;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.ChannelBuilder;
@@ -20,12 +21,20 @@ public class ModNetworking {
 
     public static void register() {
         // Packet registration will go here
-        CHANNEL.messageBuilder(CameraAttachPacket.class,0)
-                .encoder(CameraAttachPacket::encode)
-                .decoder(CameraAttachPacket::decode)
-                .consumerMainThread(CameraAttachPacket::handle)
+        int id = 0;
+        CHANNEL.messageBuilder(DroneMovePacket.class,id ++)
+                .encoder(DroneMovePacket::encode)
+                .decoder(DroneMovePacket::decode)
+                .consumerMainThread(DroneMovePacket::handle)
                 .add();
     }
+
+
+    public static void sendMovePacket(EntityDrone drone, double moveX, double moveY, double moveZ) {
+        CHANNEL.send(new DroneMovePacket(drone.getId(), moveX, moveY, moveZ), PacketDistributor.SERVER.noArg());
+
+    }
+
 
 
     public static void sendToServer(Object msg){
