@@ -17,6 +17,15 @@ public class DroneCamera {
     private static boolean active = false;
     private static Entity originalCameraEntity = null;
 
+
+    public static boolean isPlayerInDroneMode() {
+        return active;
+    }
+
+    public static void setDroneMode(boolean arg) {
+        active = arg;
+    }
+
     public static void toggleDroneCamera(EntityDrone drone) {
         Minecraft mc = Minecraft.getInstance();
 
@@ -26,6 +35,7 @@ public class DroneCamera {
                 mc.setCameraEntity(originalCameraEntity);
             }
             active = false;
+            setDroneMode(false);
         } else {
             // Save the player's original camera entity (the player)
             originalCameraEntity = mc.getCameraEntity();
@@ -33,6 +43,7 @@ public class DroneCamera {
             if (originalCameraEntity != null && originalCameraEntity != drone) {
                 mc.setCameraEntity(drone); // Switch to drone camera
                 active = true;
+                setDroneMode(true);
             }
         }
     }
